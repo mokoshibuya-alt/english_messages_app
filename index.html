@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>英語メッセージ翻訳カード</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+  <header>
+    <h1>英語メッセージ翻訳カード</h1>
+    <p>Claude Code / VS Code / ChatGPT / GitHub / ターミナルでよく出る英語を理解する</p>
+  </header>
+
+  <div class="progress-wrap">
+    <div class="progress-info">
+      <span>進捗</span>
+      <span id="counter">1 / 30</span>
+    </div>
+    <div class="progress-bar-bg">
+      <div class="progress-bar-fill" id="progress-bar" style="width: 3.3%"></div>
+    </div>
+  </div>
+
+  <main>
+    <!-- 表示モード・学習状況 -->
+    <div class="control-bar">
+      <div class="mode-switcher">
+        <label for="mode-select" class="control-label">表示モード</label>
+        <select id="mode-select" class="mode-select" onchange="onModeChange(this.value)">
+          <option value="study">通常学習</option>
+          <option value="all">全件</option>
+          <option value="new">新規</option>
+          <option value="review">復習</option>
+          <option value="ok">OK</option>
+        </select>
+      </div>
+      <div class="stats-bar">
+        <span class="stat-pill stat-pill-all">全件 <strong id="stat-all">0</strong></span>
+        <span class="stat-pill stat-pill-new">新規 <strong id="stat-new">0</strong></span>
+        <span class="stat-pill stat-pill-review">復習 <strong id="stat-review">0</strong></span>
+        <span class="stat-pill stat-pill-ok">OK <strong id="stat-ok">0</strong></span>
+      </div>
+    </div>
+
+    <!-- 該当カードがない場合のメッセージ -->
+    <div class="empty-state" id="empty-state" style="display:none;"></div>
+
+    <div class="card fade-in" id="card">
+
+      <!-- 英語メッセージ -->
+      <div class="section-english">
+        <div class="section-label-row">
+          <div class="label">English Message</div>
+          <button class="speak-btn" id="speak-full" onclick="speakFull()" title="英文全体を読み上げる">🔊</button>
+        </div>
+        <div class="english-text" id="english-text"></div>
+        <div class="badge-wrap" id="context-badges"></div>
+      </div>
+
+      <!-- 日本語訳 -->
+      <div class="section-japanese">
+        <div class="label">日本語訳</div>
+        <div class="japanese-text" id="japanese-text"></div>
+      </div>
+
+      <!-- どんな場面で出るか -->
+      <div class="section-explanation collapsible-section" id="section-explanation">
+        <button class="collapsible-header" onclick="toggleSection('explanation')" aria-expanded="false">
+          <span class="label">どんな場面で出る？</span>
+          <span class="toggle-icon">▼</span>
+        </button>
+        <div class="collapsible-body">
+          <div class="explanation-text" id="explanation-text"></div>
+        </div>
+      </div>
+
+      <!-- 重要単語 -->
+      <div class="section-vocab collapsible-section" id="section-vocab">
+        <button class="collapsible-header" onclick="toggleSection('vocab')" aria-expanded="false">
+          <span class="label">重要単語</span>
+          <span class="toggle-icon">▼</span>
+        </button>
+        <div class="collapsible-body">
+          <div class="vocab-list" id="vocab-list"></div>
+        </div>
+      </div>
+
+      <!-- 英語学習メモ -->
+      <div class="section-tip collapsible-section" id="section-tip">
+        <button class="collapsible-header" onclick="toggleSection('tip')" aria-expanded="false">
+          <span class="tip-header">
+            <span class="tip-icon">💡</span>
+            <span>英語学習メモ</span>
+          </span>
+          <span class="toggle-icon">▼</span>
+        </button>
+        <div class="collapsible-body">
+          <div class="tip-text" id="learning-tip-text"></div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- 学習状態の確認・変更 -->
+    <div class="status-bar" id="status-bar">
+      <div class="status-current">
+        <span class="status-current-label">この例文の状態:</span>
+        <span class="status-badge status-new" id="current-status-badge">新規</span>
+      </div>
+      <div class="status-actions">
+        <button class="status-btn status-btn-review" id="btn-mark-review" onclick="setCardStatus('review')">🔁 復習にする</button>
+        <button class="status-btn status-btn-ok" id="btn-mark-ok" onclick="setCardStatus('ok')">✅ OKにする</button>
+      </div>
+    </div>
+
+    <!-- ナビゲーション -->
+    <div class="nav-wrap" id="nav-wrap">
+      <button class="btn btn-secondary" id="btn-prev" onclick="goPrev()">← 前へ</button>
+      <button class="btn btn-primary" id="btn-next" onclick="goNext()">次へ →</button>
+      <button class="btn-random" id="btn-random" onclick="goRandom()" title="ランダム">🔀</button>
+    </div>
+
+    <p class="keyboard-hint">
+      キーボードの <kbd>←</kbd> <kbd>→</kbd> でも操作できます
+    </p>
+  </main>
+
+  <script src="data.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
