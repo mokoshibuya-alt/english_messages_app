@@ -155,7 +155,8 @@ function defaultState() {
   return {
     statuses,
     mode: "study",
-    lastIds: { study: null, all: null, new: null, review: null, ok: null }
+    lastIds: { study: null, all: null, new: null, review: null, ok: null },
+    updatedAt: 0
   };
 }
 
@@ -175,7 +176,8 @@ function loadState() {
     return {
       statuses,
       mode: MODES.includes(loaded.mode) ? loaded.mode : def.mode,
-      lastIds: Object.assign({}, def.lastIds, loaded.lastIds || {})
+      lastIds: Object.assign({}, def.lastIds, loaded.lastIds || {}),
+      updatedAt: typeof loaded.updatedAt === "number" ? loaded.updatedAt : 0
     };
   } catch (e) {
     return def;
@@ -183,11 +185,75 @@ function loadState() {
 }
 
 function saveState() {
+  state.updatedAt = Date.now();
   localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+  scheduleCloudSync();
 }
 
 function getStatus(id) {
   return state.statuses[id] || "new";
+}
+
+// =====================================================
+// クラウド同期（Firebase Realtime Database）
+// 端末をまたいで学習状態を自動的に同期する
+// =====================================================
+const firebaseConfig = {
+  apiKey: "AIzaSyCxD61OVY8hL2cyQG9B5inBpzQlZkpQ4k",
+  authDomain: "english-messages-app.firebaseapp.com",
+  databaseURL: "https://english-messages-app-default-rtdb.firebaseio.com",
+  projectId: "english-messages-app",
+  storageBucket: "english-messages-app.firebasestorage.app",
+  messagingSenderId: "659606921791",
+  appId: "1:659606921791:web:e35aa616eeb1084b8c4e8a"
+};
+
+firebase.initializeApp(firebaseConfig);
+const syncRef = firebase.database().ref("syncState");
+
+let cloudSyncTimer = null;
+
+// 短時間に連続して呼ばれてもまとめて1回だけ送信する
+function scheduleCloudSync() {
+  if (cloudSyncTimer) clearTimeout(cloudSyncTimer);
+  cloudSyncTimer = setTimeout(() => {
+    syncRef.set(state).catch(err => {
+      console.warn("クラウドへの保存に失敗しました（オフラインの可能性があります）:", err);
+    });
+  }, 1000);
+}
+
+// 起動時にクラウド側の状態を確認し、より新しければ反映する
+function syncFromCloud() {
+  syncRef.once("value")
+    .then(snapshot => {
+      const cloud = snapshot.val();
+      if (!cloud || typeof cloud.statuses !== "object") return;
+      if ((cloud.updatedAt || 0) <= (state.updatedAt || 0)) return;
+
+      const mergedStatuses = {};
+      messages.forEach(m => {
+        const s = cloud.statuses[m.id];
+        mergedStatuses[m.id] = (s === "new" || s === "review" || s === "ok") ? s : "new";
+      });
+
+      state.statuses = mergedStatuses;
+      state.mode = MODES.includes(cloud.mode) ? cloud.mode : state.mode;
+      state.lastIds = Object.assign(
+        { study: null, all: null, new: null, review: null, ok: null },
+        cloud.lastIds || {}
+      );
+      state.updatedAt = cloud.updatedAt;
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+
+      rebuildList(state.lastIds[state.mode]);
+      document.getElementById("mode-select").value = state.mode;
+      updateStats();
+      render();
+    })
+    .catch(err => {
+      console.warn("クラウドからの読み込みに失敗しました（オフラインの可能性があります）:", err);
+    });
 }
 
 // =====================================================
@@ -561,3 +627,5 @@ rebuildList(state.lastIds[state.mode]);
 document.getElementById("mode-select").value = state.mode;
 updateStats();
 render();
+
+syncFromCloud();
