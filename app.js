@@ -228,7 +228,15 @@ function syncFromCloud() {
   syncRef.once("value")
     .then(snapshot => {
       const cloud = snapshot.val();
-      if (!cloud || typeof cloud.statuses !== "object") return;
+
+      // クラウドにまだ何もない場合は、この端末の状態を初期データとして送る
+      if (!cloud || typeof cloud.statuses !== "object") {
+        syncRef.set(state).catch(err => {
+          console.warn("クラウドへの初期保存に失敗しました（オフラインの可能性があります）:", err);
+        });
+        return;
+      }
+
       if ((cloud.updatedAt || 0) <= (state.updatedAt || 0)) return;
 
       const mergedStatuses = {};
