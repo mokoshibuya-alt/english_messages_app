@@ -556,6 +556,48 @@ main {
   box-shadow: none;
 }
 
+/* ===== データの書き出し・読み込み（端末間の引き継ぎ） ===== */
+.data-io-bar {
+  background: var(--card-bg);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  padding: 14px 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.data-io-label {
+  font-size: 0.78rem;
+  color: var(--text-sub);
+  font-weight: 600;
+  text-align: center;
+}
+
+.data-io-actions {
+  display: flex;
+  gap: 10px;
+}
+
+.btn-io {
+  flex: 1;
+  padding: 12px 16px;
+  border-radius: 12px;
+  border: 2px solid var(--border);
+  background: var(--card-bg);
+  font-size: 0.88rem;
+  font-weight: 600;
+  cursor: pointer;
+  color: var(--text-sub);
+  transition: all 0.18s ease;
+}
+
+.btn-io:hover {
+  border-color: var(--primary);
+  color: var(--primary);
+  background: #f0f2ff;
+}
+
 /* ===== KEYBOARD HINT ===== */
 .keyboard-hint {
   font-size: 0.72rem;
@@ -661,6 +703,14 @@ kbd {
   }
 
   .collapsible-header { padding: 10px 0; margin: -10px 0; }
+
+  /* ===== データの書き出し・読み込み ===== */
+  .data-io-bar { padding: 14px 16px; }
+  .btn-io {
+    min-height: 50px;
+    font-size: 0.92rem;
+    padding: 14px 12px;
+  }
 }
 
 /* ===== RESPONSIVE: 小型スマホ ===== */
@@ -679,4 +729,7 @@ kbd {
 
   .status-actions { flex-direction: column; }
   .status-btn { flex: 1 1 100%; }
+
+  .data-io-actions { flex-direction: column; }
+  .btn-io { flex: 1 1 100%; }
 }

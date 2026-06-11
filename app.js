@@ -295,6 +295,96 @@ function setCardStatus(newStatus) {
 }
 
 // =====================================================
+// 学習データのエクスポート / インポート（端末間の引き継ぎ）
+// =====================================================
+function exportState() {
+  const data = {
+    exportedAt: new Date().toISOString(),
+    statuses: state.statuses,
+    mode: state.mode,
+    lastIds: state.lastIds
+  };
+
+  const blob = new Blob([JSON.stringify(data, null, 2)], { type: "application/json" });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = "learning-state.json";
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+}
+
+function triggerImport() {
+  document.getElementById("import-file-input").click();
+}
+
+function handleImportFile(event) {
+  const file = event.target.files[0];
+  if (!file) return;
+
+  const reader = new FileReader();
+  reader.onload = e => {
+    let data;
+    try {
+      data = JSON.parse(e.target.result);
+    } catch (err) {
+      alert("⚠️ ファイルの形式が正しくありません（JSONとして読み込めませんでした）。\nエクスポートした learning-state.json を選択してください。");
+      event.target.value = "";
+      return;
+    }
+
+    if (!data || typeof data !== "object" || typeof data.statuses !== "object" || data.statuses === null) {
+      alert("⚠️ 学習データの内容が正しくありません。\nこのアプリからエクスポートした learning-state.json を選択してください。");
+      event.target.value = "";
+      return;
+    }
+
+    const ok = confirm(
+      "現在この端末に保存されている学習状態（新規/復習/OKの記録、最後に見ていた位置）を、\n" +
+      "読み込んだファイルの内容で上書きします。\n\n" +
+      "この操作は取り消せません。よろしいですか？"
+    );
+    if (!ok) {
+      event.target.value = "";
+      return;
+    }
+
+    // 未登録/不正な値が含まれていても安全な状態に補正
+    const newStatuses = {};
+    messages.forEach(m => {
+      const s = data.statuses[m.id];
+      newStatuses[m.id] = (s === "new" || s === "review" || s === "ok") ? s : "new";
+    });
+
+    state.statuses = newStatuses;
+    state.mode = MODES.includes(data.mode) ? data.mode : state.mode;
+    state.lastIds = Object.assign(
+      { study: null, all: null, new: null, review: null, ok: null },
+      data.lastIds || {}
+    );
+
+    saveState();
+    rebuildList(state.lastIds[state.mode]);
+    document.getElementById("mode-select").value = state.mode;
+    updateStats();
+    render();
+    window.scrollTo({ top: 0, behavior: "smooth" });
+
+    alert("✅ 学習データを読み込みました。");
+    event.target.value = "";
+  };
+
+  reader.onerror = () => {
+    alert("⚠️ ファイルの読み込みに失敗しました。もう一度お試しください。");
+    event.target.value = "";
+  };
+
+  reader.readAsText(file);
+}
+
+// =====================================================
 // セクションの折りたたみ（重要単語・場面説明・英語学習メモ）
 // =====================================================
 const COLLAPSIBLE_SECTIONS = ["explanation", "vocab", "tip"];

@@ -122,6 +122,16 @@
       <button class="btn-random" id="btn-random" onclick="goRandom()" title="ランダム">🔀</button>
     </div>
 
+    <!-- 学習データの保存・復元（端末間の引き継ぎ用） -->
+    <div class="data-io-bar">
+      <div class="data-io-label">学習データの保存・復元（端末間の引き継ぎ用）</div>
+      <div class="data-io-actions">
+        <button class="btn-io btn-export" onclick="exportState()">📤 データを書き出す</button>
+        <button class="btn-io btn-import" onclick="triggerImport()">📥 データを読み込む</button>
+      </div>
+      <input type="file" id="import-file-input" accept="application/json,.json" style="display:none" onchange="handleImportFile(event)">
+    </div>
+
     <p class="keyboard-hint">
       キーボードの <kbd>←</kbd> <kbd>→</kbd> でも操作できます
     </p>
