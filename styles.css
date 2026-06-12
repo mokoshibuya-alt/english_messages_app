@@ -117,6 +117,7 @@ main {
 .mode-switcher {
   display: flex;
   align-items: center;
+  flex-wrap: wrap;
   gap: 8px;
 }
 
@@ -140,6 +141,43 @@ main {
 .mode-select:focus {
   outline: none;
   border-color: var(--primary);
+}
+
+/* ===== カード番号で移動 ===== */
+.card-jump-label {
+  margin-left: 4px;
+}
+
+.card-jump-input {
+  width: 64px;
+  padding: 7px 8px;
+  border: 2px solid var(--border);
+  border-radius: 8px;
+  font-size: 0.85rem;
+  color: var(--text);
+}
+
+.card-jump-input:focus {
+  outline: none;
+  border-color: var(--primary);
+}
+
+.card-jump-btn {
+  padding: 7px 12px;
+  border-radius: 8px;
+  border: 2px solid var(--border);
+  background: var(--card-bg);
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  color: var(--text-sub);
+  transition: all 0.18s ease;
+}
+
+.card-jump-btn:hover {
+  border-color: var(--primary);
+  color: var(--primary);
+  background: #f0f2ff;
 }
 
 .stats-bar {
@@ -557,42 +595,6 @@ main {
 }
 
 /* ===== データの書き出し・読み込み（端末間の引き継ぎ） ===== */
-.card-jump-bar {
-  background: var(--card-bg);
-  border-radius: var(--radius);
-  box-shadow: var(--shadow);
-  padding: 12px 20px;
-  display: flex;
-  align-items: center;
-  flex-wrap: wrap;
-  gap: 10px;
-}
-
-.card-jump-label {
-  font-size: 0.85rem;
-  color: var(--text-sub);
-  font-weight: 600;
-}
-
-.card-jump-controls {
-  display: flex;
-  gap: 8px;
-  flex: 1;
-}
-
-.card-jump-input {
-  width: 80px;
-  padding: 10px 12px;
-  border: 2px solid var(--border);
-  border-radius: 10px;
-  font-size: 0.95rem;
-  color: var(--text);
-}
-
-.card-jump-controls .btn-io {
-  flex: 0 0 auto;
-}
-
 .data-io-bar {
   background: var(--card-bg);
   border-radius: var(--radius);
@@ -693,13 +695,19 @@ kbd {
 
   /* ===== 表示モード・学習状況 ===== */
   .control-bar { flex-direction: column; align-items: stretch; gap: 10px; }
-  .mode-switcher { justify-content: space-between; }
+  .mode-switcher { justify-content: flex-start; }
   .mode-select {
     flex: 1;
     padding: 12px 14px;
     font-size: 0.95rem;
     min-height: 46px;
   }
+  .card-jump-input,
+  .card-jump-btn {
+    min-height: 44px;
+    font-size: 0.92rem;
+  }
+  .card-jump-input { width: 70px; }
   .stats-bar { justify-content: space-between; }
   .stat-pill { flex: 1 1 40%; justify-content: center; }
 
@@ -748,16 +756,6 @@ kbd {
     padding: 14px 12px;
   }
 
-  /* ===== カード番号で移動 ===== */
-  .card-jump-bar { padding: 12px 16px; }
-  .card-jump-input {
-    min-height: 50px;
-    font-size: 0.95rem;
-  }
-  .card-jump-controls .btn-io {
-    min-height: 50px;
-    padding: 14px 16px;
-  }
 }
 
 /* ===== RESPONSIVE: 小型スマホ ===== */

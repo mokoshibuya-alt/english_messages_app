@@ -390,12 +390,16 @@ function toggleSection(name) {
   section.querySelector(".collapsible-header").setAttribute("aria-expanded", expanded ? "true" : "false");
 }
 
-// カード切り替え時はすべて折りたたみ状態に戻す
+// カード切り替え時は折りたたみ状態に戻す
+// PC・タブレット（769px以上）では「重要単語」のみ初期表示で展開しておく
 function collapseAllSections() {
+  const expandVocabByDefault = window.innerWidth > 768;
+
   COLLAPSIBLE_SECTIONS.forEach(name => {
     const section = document.getElementById(`section-${name}`);
-    section.classList.remove("expanded");
-    section.querySelector(".collapsible-header").setAttribute("aria-expanded", "false");
+    const expanded = expandVocabByDefault && name === "vocab";
+    section.classList.toggle("expanded", expanded);
+    section.querySelector(".collapsible-header").setAttribute("aria-expanded", expanded ? "true" : "false");
   });
 }
 
