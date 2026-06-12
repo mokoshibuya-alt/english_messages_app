@@ -27,7 +27,8 @@
     <!-- 表示モード・学習状況 -->
     <div class="control-bar">
       <div class="mode-switcher">
-        <label for="mode-select" class="control-label">表示モード</label>
+        <label for="mode-select" class="control-label mode-label-full">表示モード</label>
+        <label for="mode-select" class="control-label mode-label-short" aria-hidden="true">モード</label>
         <select id="mode-select" class="mode-select" onchange="onModeChange(this.value)">
           <option value="study">通常学習</option>
           <option value="all">全件</option>
@@ -35,22 +36,17 @@
           <option value="review">復習</option>
           <option value="ok">OK</option>
         </select>
+        <label for="card-jump-input" class="control-label card-jump-label card-jump-label-full">番号で移動</label>
+        <label for="card-jump-input" class="control-label card-jump-label card-jump-label-short" aria-hidden="true">番号</label>
+        <input type="number" id="card-jump-input" class="card-jump-input" min="1" inputmode="numeric" placeholder="例: 14"
+               onkeydown="if(event.key==='Enter'){goToCardInput()}">
+        <button class="card-jump-btn" onclick="goToCardInput()">移動</button>
       </div>
       <div class="stats-bar">
         <span class="stat-pill stat-pill-all">全件 <strong id="stat-all">0</strong></span>
         <span class="stat-pill stat-pill-new">新規 <strong id="stat-new">0</strong></span>
         <span class="stat-pill stat-pill-review">復習 <strong id="stat-review">0</strong></span>
         <span class="stat-pill stat-pill-ok">OK <strong id="stat-ok">0</strong></span>
-      </div>
-    </div>
-
-    <!-- カード番号で移動 -->
-    <div class="card-jump-bar">
-      <label for="card-jump-input" class="card-jump-label">カード番号で移動</label>
-      <div class="card-jump-controls">
-        <input type="number" id="card-jump-input" class="card-jump-input" min="1" inputmode="numeric" placeholder="例: 14"
-               onkeydown="if(event.key==='Enter'){goToCardInput()}">
-        <button class="btn-io" onclick="goToCardInput()">移動</button>
       </div>
     </div>
 

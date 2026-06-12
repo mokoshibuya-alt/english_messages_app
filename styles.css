@@ -143,6 +143,12 @@ main {
   border-color: var(--primary);
 }
 
+/* 表示モード・カード番号ラベルの短縮表示切り替え（スマホでは短い方を表示） */
+.mode-label-short,
+.card-jump-label-short {
+  display: none;
+}
+
 /* ===== カード番号で移動 ===== */
 .card-jump-label {
   margin-left: 4px;
@@ -696,6 +702,17 @@ kbd {
   /* ===== 表示モード・学習状況 ===== */
   .control-bar { flex-direction: column; align-items: stretch; gap: 10px; }
   .mode-switcher { justify-content: flex-start; }
+
+  /* ラベルを短縮表示に切り替え */
+  .mode-label-full,
+  .card-jump-label-full {
+    display: none;
+  }
+  .mode-label-short,
+  .card-jump-label-short {
+    display: inline;
+  }
+
   .mode-select {
     flex: 1;
     padding: 12px 14px;
@@ -707,9 +724,16 @@ kbd {
     min-height: 44px;
     font-size: 0.92rem;
   }
-  .card-jump-input { width: 70px; }
-  .stats-bar { justify-content: space-between; }
-  .stat-pill { flex: 1 1 40%; justify-content: center; }
+  .card-jump-input { width: 60px; }
+
+  /* 統計バッジは幅が許せば4つ1行、入らなければ自動で折り返す */
+  .stats-bar { justify-content: space-between; gap: 4px; }
+  .stat-pill {
+    flex: 1 1 70px;
+    justify-content: center;
+    font-size: 0.7rem;
+    padding: 4px 6px;
+  }
 
   /* ===== 学習状態バー ===== */
   .status-bar { flex-direction: column; align-items: stretch; padding: 14px 16px; gap: 12px; }
