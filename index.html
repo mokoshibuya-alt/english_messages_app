@@ -38,6 +38,12 @@
           </select>
         </div>
         <div class="field-group">
+          <label for="card-jump-input" class="control-label card-jump-label">番号</label>
+          <input type="number" id="card-jump-input" class="card-jump-input" min="1" inputmode="numeric" placeholder="例: 14"
+                 onkeydown="if(event.key==='Enter'){goToCardInput()}">
+          <button class="card-jump-btn" onclick="goToCardInput()">移動</button>
+        </div>
+        <div class="field-group">
           <label for="category-select" class="control-label">カテゴリ</label>
           <select id="category-select" class="mode-select" onchange="onCategoryChange(this.value)">
             <option value="all">すべて</option>
@@ -49,12 +55,6 @@
             <option value="windows">Windows操作・設定</option>
             <option value="ai">AIツール</option>
           </select>
-        </div>
-        <div class="field-group">
-          <label for="card-jump-input" class="control-label card-jump-label">番号</label>
-          <input type="number" id="card-jump-input" class="card-jump-input" min="1" inputmode="numeric" placeholder="例: 14"
-                 onkeydown="if(event.key==='Enter'){goToCardInput()}">
-          <button class="card-jump-btn" onclick="goToCardInput()">移動</button>
         </div>
       </div>
       <div class="stats-bar">
