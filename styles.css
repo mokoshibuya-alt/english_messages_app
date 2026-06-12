@@ -121,6 +121,12 @@ main {
   gap: 8px;
 }
 
+.field-group {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
 .control-label {
   font-size: 0.78rem;
   color: var(--text-sub);
@@ -144,10 +150,6 @@ main {
 }
 
 /* ===== カード番号で移動 ===== */
-.card-jump-label {
-  margin-left: 4px;
-}
-
 .card-jump-input {
   width: 64px;
   padding: 7px 8px;
@@ -694,7 +696,6 @@ kbd {
   .vocab-meaning { font-size: 0.82rem; }
 
   /* ===== 表示モード・学習状況 ===== */
-  .control-bar { flex-direction: column; align-items: stretch; gap: 10px; }
   .mode-switcher { justify-content: flex-start; }
 
   .mode-select {
