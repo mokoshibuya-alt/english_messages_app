@@ -696,6 +696,7 @@ kbd {
   .vocab-meaning { font-size: 0.82rem; }
 
   /* ===== 表示モード・学習状況 ===== */
+  .control-bar { flex-direction: column; align-items: stretch; }
   .mode-switcher { justify-content: flex-start; }
 
   .mode-select {
