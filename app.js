@@ -1,85 +1,4 @@
 // =====================================================
-// カタカナ発音テーブル
-// 新しい例文を追加した時は、その語彙の単語をここに追記する
-// =====================================================
-const katakanaMap = {
-  // バッチ 1 (id 1-30)
-  "permission":    "パーミッション",
-  "denied":        "デナイド",
-  "such":          "サッチ",
-  "directory":     "ディレクトリ",
-  "command":       "コマンド",
-  "found":         "ファウンド",
-  "delete":        "デリート",
-  "action":        "アクション",
-  "undone":        "アンダン",
-  "changes":       "チェンジズ",
-  "staged":        "ステージド",
-  "commit":        "コミット",
-  "working tree":  "ワーキングツリー",
-  "clean":         "クリーン",
-  "merge":         "マージ",
-  "conflict":      "コンフリクト",
-  "detected":      "ディテクテッド",
-  "branch":        "ブランチ",
-  "up to date":    "アップトゥデート",
-  "origin":        "オリジン",
-  "pull request":  "プルリクエスト",
-  "merged":        "マージド",
-  "successfully":  "サクセスフリー",
-  "rate limit":    "レートリミット",
-  "exceeded":      "エクシーデッド",
-  "access token":  "アクセストークン",
-  "expired":       "エクスパイアード",
-  "trust":         "トラスト",
-  "authors":       "オーサーズ",
-  "unsaved":       "アンセーブド",
-  "lost":          "ロスト",
-  "syntax":        "シンタックス",
-  "unexpected":    "アンエクスペクテッド",
-  "token":         "トークン",
-  "properties":    "プロパティーズ",
-  "undefined":     "アンディファインド",
-  "extension":     "エクステンション",
-  "incompatible":  "インコンパティブル",
-  "update":        "アップデート",
-  "available":     "アベイラブル",
-  "apply":         "アプライ",
-  "session":       "セッション",
-  "invalid":       "インバリッド",
-  "credentials":   "クレデンシャルズ",
-  "allow":         "アロウ",
-  "run":           "ラン",
-  "matching":      "マッチング",
-  "results":       "リザルツ",
-  "connection":    "コネクション",
-  "timed out":     "タイムドアウト",
-  "untracked":     "アントラックド",
-  "include":       "インクルード",
-  "detached":      "デタッチド",
-  "head":          "ヘッド",
-  "state":         "ステート",
-  "conversation":  "コンバーセーション",
-  "permanently":   "パーマネントリー",
-  "deleted":       "デリーテッド",
-  "limit":         "リミット",
-  "reached":       "リーチト",
-  "fetch":         "フェッチ",
-  "failed":        "フェイルド",
-  "repository":    "リポジトリ",
-  "push":          "プッシュ",
-  "uncommitted":   "アンコミッテッド",
-  "stash":         "スタッシュ",
-  "overwrite":     "オーバーライト",
-  "existing":      "イグジスティング",
-};
-
-// 大文字小文字を無視してカタカナを取得
-function getKatakana(word) {
-  return katakanaMap[word.toLowerCase()] || katakanaMap[word] || "";
-}
-
-// =====================================================
 // 音声読み上げ (Web Speech API)
 // =====================================================
 function speak(text, btn, rate) {
@@ -111,8 +30,10 @@ function speakFull() {
 
 function speakWord(index) {
   if (currentList.length === 0) return;
+  const v = currentList[currentIndex].vocabulary[index];
+  const word = typeof v === "string" ? v : v.term;
   speak(
-    currentList[currentIndex].vocabulary[index].word,
+    word,
     document.getElementById(`vocab-speak-${index}`),
     0.75
   );
@@ -553,15 +474,18 @@ function render() {
   // 語彙（カタカナ + 読み上げボタン付き）
   const vocabEl = document.getElementById("vocab-list");
   vocabEl.innerHTML = msg.vocabulary.map((v, i) => {
-    const kana = getKatakana(v.word);
+    const word = typeof v === "string" ? v : v.term;
+    const term = getTerm(word) || {};
+    const meaning = (typeof v === "object" && v.meaning) ? v.meaning : (term.meaning || "");
+    const kana = term.katakana || "";
     return `<div class="vocab-item">
       <button class="speak-btn speak-btn-sm" id="vocab-speak-${i}"
-              onclick="speakWord(${i})" title="${v.word} を読み上げる">🔊</button>
+              onclick="speakWord(${i})" title="${word} を読み上げる">🔊</button>
       <div class="vocab-word-wrap">
-        <span class="vocab-word">${v.word}</span>
+        <span class="vocab-word">${word}</span>
         ${kana ? `<span class="vocab-katakana">${kana}</span>` : ""}
       </div>
-      <span class="vocab-meaning">${v.meaning}</span>
+      <span class="vocab-meaning">${meaning}</span>
     </div>`;
   }).join("");
 
