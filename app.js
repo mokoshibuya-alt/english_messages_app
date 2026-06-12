@@ -541,6 +541,24 @@ function goRandom() {
   window.scrollTo({ top: 0, behavior: "smooth" });
 }
 
+function goToCardInput() {
+  const input = document.getElementById("card-jump-input");
+  const n = parseInt(input.value, 10);
+
+  if (currentList.length === 0) return;
+
+  if (!Number.isInteger(n) || n < 1 || n > currentList.length) {
+    alert(`カード番号は 1〜${currentList.length} の範囲で入力してください。`);
+    return;
+  }
+
+  currentIndex = n - 1;
+  persistPosition();
+  render();
+  window.scrollTo({ top: 0, behavior: "smooth" });
+  input.value = "";
+}
+
 // キーボード操作
 document.addEventListener("keydown", e => {
   if (e.key === "ArrowRight" || e.key === "ArrowDown") goNext();

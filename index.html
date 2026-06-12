@@ -44,6 +44,16 @@
       </div>
     </div>
 
+    <!-- カード番号で移動 -->
+    <div class="card-jump-bar">
+      <label for="card-jump-input" class="card-jump-label">カード番号で移動</label>
+      <div class="card-jump-controls">
+        <input type="number" id="card-jump-input" class="card-jump-input" min="1" inputmode="numeric" placeholder="例: 14"
+               onkeydown="if(event.key==='Enter'){goToCardInput()}">
+        <button class="btn-io" onclick="goToCardInput()">移動</button>
+      </div>
+    </div>
+
     <!-- 該当カードがない場合のメッセージ -->
     <div class="empty-state" id="empty-state" style="display:none;"></div>
 
