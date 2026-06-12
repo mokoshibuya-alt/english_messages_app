@@ -27,8 +27,7 @@
     <!-- 表示モード・学習状況 -->
     <div class="control-bar">
       <div class="mode-switcher">
-        <label for="mode-select" class="control-label mode-label-full">表示モード</label>
-        <label for="mode-select" class="control-label mode-label-short" aria-hidden="true">モード</label>
+        <label for="mode-select" class="control-label">モード</label>
         <select id="mode-select" class="mode-select" onchange="onModeChange(this.value)">
           <option value="study">通常学習</option>
           <option value="all">全件</option>
@@ -36,8 +35,18 @@
           <option value="review">復習</option>
           <option value="ok">OK</option>
         </select>
-        <label for="card-jump-input" class="control-label card-jump-label card-jump-label-full">番号で移動</label>
-        <label for="card-jump-input" class="control-label card-jump-label card-jump-label-short" aria-hidden="true">番号</label>
+        <label for="category-select" class="control-label">カテゴリ</label>
+        <select id="category-select" class="mode-select" onchange="onCategoryChange(this.value)">
+          <option value="all">すべて</option>
+          <option value="error">エラーメッセージ</option>
+          <option value="git">Git・GitHub</option>
+          <option value="terminal">ターミナル・コマンド</option>
+          <option value="vscode">VS Code</option>
+          <option value="web">ブラウザ・Web開発</option>
+          <option value="windows">Windows操作・設定</option>
+          <option value="ai">AIツール</option>
+        </select>
+        <label for="card-jump-input" class="control-label card-jump-label">番号</label>
         <input type="number" id="card-jump-input" class="card-jump-input" min="1" inputmode="numeric" placeholder="例: 14"
                onkeydown="if(event.key==='Enter'){goToCardInput()}">
         <button class="card-jump-btn" onclick="goToCardInput()">移動</button>

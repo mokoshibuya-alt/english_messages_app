@@ -143,12 +143,6 @@ main {
   border-color: var(--primary);
 }
 
-/* 表示モード・カード番号ラベルの短縮表示切り替え（スマホでは短い方を表示） */
-.mode-label-short,
-.card-jump-label-short {
-  display: none;
-}
-
 /* ===== カード番号で移動 ===== */
 .card-jump-label {
   margin-left: 4px;
@@ -703,18 +697,8 @@ kbd {
   .control-bar { flex-direction: column; align-items: stretch; gap: 10px; }
   .mode-switcher { justify-content: flex-start; }
 
-  /* ラベルを短縮表示に切り替え */
-  .mode-label-full,
-  .card-jump-label-full {
-    display: none;
-  }
-  .mode-label-short,
-  .card-jump-label-short {
-    display: inline;
-  }
-
   .mode-select {
-    flex: 1;
+    flex: 1 1 100px;
     padding: 12px 14px;
     font-size: 0.95rem;
     min-height: 46px;

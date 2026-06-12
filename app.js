@@ -70,12 +70,26 @@ const STORAGE_KEY = "english_messages_app_state_v1";
 const MODES = ["study", "all", "new", "review", "ok"];
 const STATUS_LABELS = { new: "新規", review: "復習", ok: "OK" };
 
+// カテゴリ: context タグをまとめた大分類（重複表示OK・エラーメッセージは横断的に独立）
+const CATEGORIES = [
+  { id: "all", tags: null },
+  { id: "error", tags: ["エラーメッセージ"] },
+  { id: "git", tags: ["Git", "GitHub"] },
+  { id: "terminal", tags: ["ターミナル", "PowerShell"] },
+  { id: "vscode", tags: ["VS Code"] },
+  { id: "web", tags: ["ブラウザ", "Webアプリ", "HTML", "CSS", "JavaScript"] },
+  { id: "windows", tags: ["Windows", "設定画面", "ファイル操作"] },
+  { id: "ai", tags: ["Claude Code", "ChatGPT", "Claude"] }
+];
+const CATEGORY_IDS = CATEGORIES.map(c => c.id);
+
 function defaultState() {
   const statuses = {};
   messages.forEach(m => { statuses[m.id] = "new"; });
   return {
     statuses,
     mode: "study",
+    category: "all",
     lastIds: { study: null, all: null, new: null, review: null, ok: null },
     updatedAt: 0
   };
@@ -97,6 +111,7 @@ function loadState() {
     return {
       statuses,
       mode: MODES.includes(loaded.mode) ? loaded.mode : def.mode,
+      category: CATEGORY_IDS.includes(loaded.category) ? loaded.category : def.category,
       lastIds: Object.assign({}, def.lastIds, loaded.lastIds || {}),
       updatedAt: typeof loaded.updatedAt === "number" ? loaded.updatedAt : 0
     };
@@ -168,6 +183,7 @@ function syncFromCloud() {
 
       state.statuses = mergedStatuses;
       state.mode = MODES.includes(cloud.mode) ? cloud.mode : state.mode;
+      state.category = CATEGORY_IDS.includes(cloud.category) ? cloud.category : state.category;
       state.lastIds = Object.assign(
         { study: null, all: null, new: null, review: null, ok: null },
         cloud.lastIds || {}
@@ -177,6 +193,7 @@ function syncFromCloud() {
 
       rebuildList(state.lastIds[state.mode]);
       document.getElementById("mode-select").value = state.mode;
+      document.getElementById("category-select").value = state.category;
       updateStats();
       render();
     })
@@ -189,10 +206,18 @@ function syncFromCloud() {
 // 表示モードごとのリスト構築
 // =====================================================
 
+// 現在選択中のカテゴリで絞り込んだ例文一覧（「すべて」なら全件）
+function getCategoryMessages() {
+  const cat = CATEGORIES.find(c => c.id === state.category);
+  if (!cat || !cat.tags) return messages;
+  return messages.filter(m => m.context.some(c => cat.tags.includes(c)));
+}
+
 // 通常学習: 新規を優先しつつ、復習を10件に1件程度混ぜる。OKは表示しない。
 function buildStudyQueue() {
-  const newCards = messages.filter(m => getStatus(m.id) === "new");
-  const reviewCards = messages.filter(m => getStatus(m.id) === "review");
+  const pool = getCategoryMessages();
+  const newCards = pool.filter(m => getStatus(m.id) === "new");
+  const reviewCards = pool.filter(m => getStatus(m.id) === "review");
 
   if (newCards.length === 0 && reviewCards.length === 0) {
     return []; // 学習対象なし（すべてOK）
@@ -220,15 +245,16 @@ function buildStudyQueue() {
 }
 
 function buildList(mode) {
+  const pool = getCategoryMessages();
   switch (mode) {
     case "all":
-      return messages.slice();
+      return pool.slice();
     case "new":
-      return messages.filter(m => getStatus(m.id) === "new");
+      return pool.filter(m => getStatus(m.id) === "new");
     case "review":
-      return messages.filter(m => getStatus(m.id) === "review");
+      return pool.filter(m => getStatus(m.id) === "review");
     case "ok":
-      return messages.filter(m => getStatus(m.id) === "ok");
+      return pool.filter(m => getStatus(m.id) === "ok");
     case "study":
     default:
       return buildStudyQueue();
@@ -270,6 +296,17 @@ function onModeChange(newMode) {
   window.scrollTo({ top: 0, behavior: "smooth" });
 }
 
+function onCategoryChange(newCategory) {
+  persistPosition();
+
+  state.category = CATEGORY_IDS.includes(newCategory) ? newCategory : "all";
+  rebuildList(state.lastIds[state.mode]);
+  saveState();
+  updateStats();
+  render();
+  window.scrollTo({ top: 0, behavior: "smooth" });
+}
+
 function setCardStatus(newStatus) {
   if (currentList.length === 0) return;
   const card = currentList[currentIndex];
@@ -297,6 +334,7 @@ function exportState() {
     exportedAt: new Date().toISOString(),
     statuses: state.statuses,
     mode: state.mode,
+    category: state.category,
     lastIds: state.lastIds
   };
 
@@ -355,6 +393,7 @@ function handleImportFile(event) {
 
     state.statuses = newStatuses;
     state.mode = MODES.includes(data.mode) ? data.mode : state.mode;
+    state.category = CATEGORY_IDS.includes(data.category) ? data.category : state.category;
     state.lastIds = Object.assign(
       { study: null, all: null, new: null, review: null, ok: null },
       data.lastIds || {}
@@ -363,6 +402,7 @@ function handleImportFile(event) {
     saveState();
     rebuildList(state.lastIds[state.mode]);
     document.getElementById("mode-select").value = state.mode;
+    document.getElementById("category-select").value = state.category;
     updateStats();
     render();
     window.scrollTo({ top: 0, behavior: "smooth" });
@@ -407,14 +447,15 @@ function collapseAllSections() {
 // 学習状況の表示
 // =====================================================
 function updateStats() {
+  const pool = getCategoryMessages();
   let newCount = 0, reviewCount = 0, okCount = 0;
-  messages.forEach(m => {
+  pool.forEach(m => {
     const s = getStatus(m.id);
     if (s === "new") newCount++;
     else if (s === "review") reviewCount++;
     else if (s === "ok") okCount++;
   });
-  document.getElementById("stat-all").textContent = messages.length;
+  document.getElementById("stat-all").textContent = pool.length;
   document.getElementById("stat-new").textContent = newCount;
   document.getElementById("stat-review").textContent = reviewCount;
   document.getElementById("stat-ok").textContent = okCount;
@@ -579,6 +620,7 @@ let currentIndex = 0;
 rebuildList(state.lastIds[state.mode]);
 
 document.getElementById("mode-select").value = state.mode;
+document.getElementById("category-select").value = state.category;
 updateStats();
 render();
 
