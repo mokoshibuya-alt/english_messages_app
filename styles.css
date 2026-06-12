@@ -712,10 +712,11 @@ kbd {
   }
   .card-jump-input { width: 60px; }
 
-  /* 統計バッジは幅が許せば4つ1行、入らなければ自動で折り返す */
-  .stats-bar { justify-content: space-between; gap: 4px; }
+  /* 統計バッジは4つ必ず1行に収める（折り返さず、幅に応じて縮める） */
+  .stats-bar { flex-wrap: nowrap; justify-content: space-between; gap: 4px; }
   .stat-pill {
-    flex: 1 1 70px;
+    flex: 1 1 0;
+    min-width: 0;
     justify-content: center;
     font-size: 0.7rem;
     padding: 4px 6px;
